@@ -1,0 +1,11 @@
+Gladys OVHcloud SMS integration
+Copyright 2026 William Deren
+
+This product is licensed under the Apache License, Version 2.0 (see LICENSE).
+
+The request signature of src/ovh-api.js follows the scheme documented by
+OVHcloud and implemented by its official python-ovh client (BSD 3-Clause,
+https://github.com/ovh/python-ovh). No file of it is included.
+
+OVHcloud and OVH are trademarks of OVH SAS. This community integration is not
+affiliated with, endorsed or sponsored by OVH SAS.

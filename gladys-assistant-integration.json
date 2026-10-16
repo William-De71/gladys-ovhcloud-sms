@@ -1,0 +1,967 @@
+{
+  "manifest_version": 1,
+  "type": "communication",
+  "name": "OVHcloud SMS",
+  "description": {
+    "en": "Gladys notifications by SMS through OVHcloud, to any operator, with scenes and widgets.",
+    "fr": "Notifications de Gladys par SMS via OVHcloud, vers tout opérateur, avec scènes et widgets.",
+    "de": "Gladys-Benachrichtigungen per SMS über OVHcloud, an jeden Anbieter, mit Szenen und Widgets.",
+    "es": "Notificaciones de Gladys por SMS con OVHcloud, a cualquier operador, con escenas y widgets."
+  },
+  "version": "0.1.0",
+  "docker_image": "ghcr.io/william-de71/gladys-ovhcloud-sms:0.1.0",
+  "gladys_version": ">=5.1.0",
+  "categories": ["notifications"],
+  "transports": ["cloud"],
+  "cover_image": "https://raw.githubusercontent.com/William-De71/gladys-ovhcloud-sms/main/cover.jpg",
+  "messaging": {
+    "receive": false
+  },
+  "config_schema": [
+    {
+      "key": "intro",
+      "type": "section",
+      "label": {
+        "en": "OVHcloud API keys",
+        "fr": "Clés de l'API OVHcloud",
+        "de": "Schlüssel der OVHcloud-API",
+        "es": "Claves de la API de OVHcloud"
+      },
+      "description": {
+        "en": "You need an SMS account at OVHcloud (an SMS pack, ordered in the Control Panel under Telecom → SMS). Open the key creation page of your region below and sign in: the rights the integration needs are already filled in (GET /sms, GET /sms/*, POST /sms/*/jobs). Give the application a name and a description, choose the \"Unlimited\" validity, then copy the application key, the application secret and the consumer key here.",
+        "fr": "Il vous faut un compte SMS chez OVHcloud (un pack SMS, commandé dans l'espace client, rubrique Télécom → SMS). Ouvrez ci-dessous la page de création de clés de votre région et connectez-vous : les droits dont l'intégration a besoin sont déjà remplis (GET /sms, GET /sms/*, POST /sms/*/jobs). Donnez un nom et une description à l'application, choisissez la validité « Unlimited », puis recopiez ici la clé d'application, le secret d'application et la clé consommateur.",
+        "de": "Sie benötigen ein SMS-Konto bei OVHcloud (ein SMS-Paket, bestellt im Control Panel unter Telecom → SMS). Öffnen Sie unten die Seite zur Schlüsselerstellung Ihrer Region und melden Sie sich an: Die Rechte, die die Integration braucht, sind bereits ausgefüllt (GET /sms, GET /sms/*, POST /sms/*/jobs). Geben Sie der Anwendung einen Namen und eine Beschreibung, wählen Sie die Gültigkeit „Unlimited“ und übertragen Sie dann Application Key, Application Secret und Consumer Key hierher.",
+        "es": "Necesita una cuenta SMS en OVHcloud (un pack de SMS, contratado en el área de cliente, apartado Telecom → SMS). Abra abajo la página de creación de claves de su región e inicie sesión: los permisos que necesita la integración ya están rellenados (GET /sms, GET /sms/*, POST /sms/*/jobs). Dé un nombre y una descripción a la aplicación, elija la validez «Unlimited» y copie aquí la clave de aplicación, el secreto de aplicación y la clave de consumidor."
+      },
+      "links": [
+        {
+          "url": "https://eu.api.ovh.com/createToken/?GET=/sms&GET=/sms/*&POST=/sms/*/jobs",
+          "label": {
+            "en": "Create the keys (Europe)",
+            "fr": "Créer les clés (Europe)",
+            "de": "Schlüssel erstellen (Europa)",
+            "es": "Crear las claves (Europa)"
+          }
+        },
+        {
+          "url": "https://ca.api.ovh.com/createToken/?GET=/sms&GET=/sms/*&POST=/sms/*/jobs",
+          "label": {
+            "en": "Create the keys (Canada)",
+            "fr": "Créer les clés (Canada)",
+            "de": "Schlüssel erstellen (Kanada)",
+            "es": "Crear las claves (Canadá)"
+          }
+        },
+        {
+          "url": "https://www.ovh.com/manager/#/telecom/sms",
+          "label": {
+            "en": "SMS accounts in the Control Panel",
+            "fr": "Comptes SMS dans l'espace client",
+            "de": "SMS-Konten im Control Panel",
+            "es": "Cuentas SMS en el área de cliente"
+          }
+        }
+      ]
+    },
+    {
+      "key": "endpoint",
+      "type": "select",
+      "label": {
+        "en": "API region",
+        "fr": "Région de l'API",
+        "de": "API-Region",
+        "es": "Región de la API"
+      },
+      "description": {
+        "en": "Where your OVHcloud account was created: Europe (ovh.com, ovhcloud.com) or Canada (ovh.ca).",
+        "fr": "Là où votre compte OVHcloud a été créé : Europe (ovh.com, ovhcloud.com) ou Canada (ovh.ca).",
+        "de": "Wo Ihr OVHcloud-Konto angelegt wurde: Europa (ovh.com, ovhcloud.com) oder Kanada (ovh.ca).",
+        "es": "Donde se creó su cuenta de OVHcloud: Europa (ovh.com, ovhcloud.com) o Canadá (ovh.ca)."
+      },
+      "options": [
+        {
+          "value": "ovh-eu",
+          "label": {
+            "en": "Europe",
+            "fr": "Europe",
+            "de": "Europa",
+            "es": "Europa"
+          }
+        },
+        {
+          "value": "ovh-ca",
+          "label": {
+            "en": "Canada",
+            "fr": "Canada",
+            "de": "Kanada",
+            "es": "Canadá"
+          }
+        }
+      ],
+      "default": "ovh-eu",
+      "required": true
+    },
+    {
+      "key": "application_key",
+      "type": "string",
+      "label": {
+        "en": "Application key",
+        "fr": "Clé d'application",
+        "de": "Application Key",
+        "es": "Clave de aplicación"
+      },
+      "description": {
+        "en": "\"Application key\" on the key creation page.",
+        "fr": "« Application key » sur la page de création des clés.",
+        "de": "„Application key“ auf der Seite zur Schlüsselerstellung.",
+        "es": "«Application key» en la página de creación de claves."
+      },
+      "required": true
+    },
+    {
+      "key": "application_secret",
+      "type": "secret",
+      "label": {
+        "en": "Application secret",
+        "fr": "Secret d'application",
+        "de": "Application Secret",
+        "es": "Secreto de aplicación"
+      },
+      "description": {
+        "en": "\"Application secret\". Stored encrypted and never shown again.",
+        "fr": "« Application secret ». Stocké chiffré et plus jamais affiché.",
+        "de": "„Application secret“. Wird verschlüsselt gespeichert und nie wieder angezeigt.",
+        "es": "«Application secret». Se guarda cifrado y no se vuelve a mostrar."
+      },
+      "required": true
+    },
+    {
+      "key": "consumer_key",
+      "type": "secret",
+      "label": {
+        "en": "Consumer key",
+        "fr": "Clé consommateur",
+        "de": "Consumer Key",
+        "es": "Clave de consumidor"
+      },
+      "description": {
+        "en": "\"Consumer key\". Stored encrypted and never shown again.",
+        "fr": "« Consumer key ». Stockée chiffrée et plus jamais affichée.",
+        "de": "„Consumer key“. Wird verschlüsselt gespeichert und nie wieder angezeigt.",
+        "es": "«Consumer key». Se guarda cifrada y no se vuelve a mostrar."
+      },
+      "required": true
+    },
+    {
+      "key": "sms_intro",
+      "type": "section",
+      "label": {
+        "en": "SMS account and sender",
+        "fr": "Compte SMS et expéditeur",
+        "de": "SMS-Konto und Absender",
+        "es": "Cuenta SMS y remitente"
+      },
+      "description": {
+        "en": "Leave both fields empty to use the only SMS account of your OVHcloud account and its first enabled sender. Without an enabled sender, SMS leave from a short number the recipients can reply to. A name sender (for example GLADYS) must first be created and approved in the Control Panel. The \"Test the connection\" button below lists the accounts and senders found.",
+        "fr": "Laissez les deux champs vides pour utiliser l'unique compte SMS de votre compte OVHcloud et son premier expéditeur actif. Sans expéditeur actif, les SMS partent d'un numéro court auquel les destinataires peuvent répondre. Un expéditeur nominatif (par exemple GLADYS) doit d'abord être créé et validé dans l'espace client. Le bouton « Tester la connexion » ci-dessous liste les comptes et expéditeurs trouvés.",
+        "de": "Lassen Sie beide Felder leer, um das einzige SMS-Konto Ihres OVHcloud-Kontos und seinen ersten aktiven Absender zu verwenden. Ohne aktiven Absender gehen die SMS von einer Kurznummer aus, auf die die Empfänger antworten können. Ein Namensabsender (zum Beispiel GLADYS) muss zuerst im Control Panel angelegt und freigegeben werden. Die Schaltfläche „Verbindung testen“ unten listet die gefundenen Konten und Absender auf.",
+        "es": "Deje ambos campos vacíos para usar la única cuenta SMS de su cuenta de OVHcloud y su primer remitente activo. Sin remitente activo, los SMS salen de un número corto al que los destinatarios pueden responder. Un remitente con nombre (por ejemplo GLADYS) debe crearse y validarse antes en el área de cliente. El botón «Probar la conexión» de abajo muestra las cuentas y remitentes encontrados."
+      }
+    },
+    {
+      "key": "service_name",
+      "type": "string",
+      "label": {
+        "en": "SMS account",
+        "fr": "Compte SMS",
+        "de": "SMS-Konto",
+        "es": "Cuenta SMS"
+      },
+      "description": {
+        "en": "Optional. Its service name, sms-xx12345-1, needed only when your OVHcloud account has several.",
+        "fr": "Facultatif. Son nom de service, sms-xx12345-1, utile seulement si votre compte OVHcloud en a plusieurs.",
+        "de": "Optional. Sein Dienstname, sms-xx12345-1, nur nötig, wenn Ihr OVHcloud-Konto mehrere hat.",
+        "es": "Opcional. Su nombre de servicio, sms-xx12345-1, solo necesario si su cuenta de OVHcloud tiene varias."
+      },
+      "placeholder": {
+        "en": "sms-xx12345-1",
+        "fr": "sms-xx12345-1",
+        "de": "sms-xx12345-1",
+        "es": "sms-xx12345-1"
+      }
+    },
+    {
+      "key": "sender",
+      "type": "string",
+      "label": {
+        "en": "Sender",
+        "fr": "Expéditeur",
+        "de": "Absender",
+        "es": "Remitente"
+      },
+      "description": {
+        "en": "Optional. An enabled sender of the SMS account: a name (GLADYS) or a virtual number (+33…).",
+        "fr": "Facultatif. Un expéditeur actif du compte SMS : un nom (GLADYS) ou un numéro virtuel (+33…).",
+        "de": "Optional. Ein aktiver Absender des SMS-Kontos: ein Name (GLADYS) oder eine virtuelle Nummer (+33…).",
+        "es": "Opcional. Un remitente activo de la cuenta SMS: un nombre (GLADYS) o un número virtual (+33…)."
+      },
+      "placeholder": {
+        "en": "GLADYS",
+        "fr": "GLADYS",
+        "de": "GLADYS",
+        "es": "GLADYS"
+      }
+    },
+    {
+      "key": "country_code",
+      "type": "string",
+      "label": {
+        "en": "Default country code",
+        "fr": "Indicatif du pays par défaut",
+        "de": "Standard-Ländervorwahl",
+        "es": "Prefijo del país por defecto"
+      },
+      "description": {
+        "en": "Added to the numbers typed without one (06 12 34 56 78 becomes +33 6 12 34 56 78). Digits only: 33 France, 32 Belgium, 41 Switzerland, 352 Luxembourg, 1 Canada.",
+        "fr": "Ajouté aux numéros saisis sans indicatif (06 12 34 56 78 devient +33 6 12 34 56 78). Chiffres seulement : 33 France, 32 Belgique, 41 Suisse, 352 Luxembourg, 1 Canada.",
+        "de": "Wird Nummern ohne Vorwahl vorangestellt (06 12 34 56 78 wird zu +33 6 12 34 56 78). Nur Ziffern: 49 Deutschland, 43 Österreich, 41 Schweiz, 33 Frankreich.",
+        "es": "Se añade a los números escritos sin prefijo (06 12 34 56 78 pasa a ser +33 6 12 34 56 78). Solo cifras: 34 España, 33 Francia, 32 Bélgica, 1 Canadá."
+      },
+      "default": "33"
+    },
+    {
+      "key": "options_intro",
+      "type": "section",
+      "label": {
+        "en": "Credits and reception",
+        "fr": "Crédits et réception",
+        "de": "Guthaben und Empfang",
+        "es": "Créditos y recepción"
+      },
+      "description": {
+        "en": "The credits are read every 15 minutes and after each SMS. The reception reads the SMS received on the account every 30 seconds, for the \"SMS received\" scene trigger and the dashboard: it needs a virtual number, or SMS sent with the short number for replies.",
+        "fr": "Les crédits sont lus toutes les 15 minutes et après chaque SMS. La réception lit toutes les 30 secondes les SMS reçus sur le compte, pour le déclencheur de scène « SMS reçu » et le tableau de bord : il faut un numéro virtuel, ou des SMS envoyés avec le numéro court pour les réponses.",
+        "de": "Das Guthaben wird alle 15 Minuten und nach jeder SMS gelesen. Der Empfang liest alle 30 Sekunden die auf dem Konto empfangenen SMS, für den Szenenauslöser „SMS empfangen“ und das Dashboard: Dafür braucht es eine virtuelle Nummer oder SMS, die mit der Kurznummer für Antworten gesendet wurden.",
+        "es": "Los créditos se leen cada 15 minutos y después de cada SMS. La recepción lee cada 30 segundos los SMS recibidos en la cuenta, para el disparador de escena «SMS recibido» y el panel: necesita un número virtual, o SMS enviados con el número corto para respuestas."
+      }
+    },
+    {
+      "key": "low_credits_threshold",
+      "type": "number",
+      "label": {
+        "en": "Low credits alert",
+        "fr": "Alerte de crédits bas",
+        "de": "Warnung bei wenig Guthaben",
+        "es": "Aviso de pocos créditos"
+      },
+      "description": {
+        "en": "Below this number of credits, the \"Credits low\" scene trigger fires once.",
+        "fr": "Sous ce nombre de crédits, le déclencheur de scène « Crédits bas » se déclenche une fois.",
+        "de": "Unter dieser Guthabenzahl löst der Szenenauslöser „Wenig Guthaben“ einmal aus.",
+        "es": "Por debajo de este número de créditos, el disparador de escena «Pocos créditos» se activa una vez."
+      },
+      "default": 20,
+      "min": 0,
+      "max": 100000
+    },
+    {
+      "key": "receive_sms",
+      "type": "boolean",
+      "label": {
+        "en": "Read the SMS received",
+        "fr": "Lire les SMS reçus",
+        "de": "Empfangene SMS lesen",
+        "es": "Leer los SMS recibidos"
+      },
+      "description": {
+        "en": "Fires \"SMS received\" for each new SMS on the account. Anyone can send an SMS with a forged number: never use it to open a door or disarm an alarm.",
+        "fr": "Déclenche « SMS reçu » pour chaque nouveau SMS du compte. N'importe qui peut envoyer un SMS avec un numéro falsifié : ne vous en servez jamais pour ouvrir une porte ou désarmer une alarme.",
+        "de": "Löst „SMS empfangen“ für jede neue SMS des Kontos aus. Jeder kann eine SMS mit gefälschter Nummer senden: Nutzen Sie es nie, um eine Tür zu öffnen oder eine Alarmanlage zu entschärfen.",
+        "es": "Activa «SMS recibido» por cada SMS nuevo de la cuenta. Cualquiera puede enviar un SMS con un número falsificado: no lo use nunca para abrir una puerta o desactivar una alarma."
+      },
+      "default": false
+    }
+  ],
+  "contact_schema": [
+    {
+      "key": "intro",
+      "type": "section",
+      "label": {
+        "en": "Notifications by SMS",
+        "fr": "Notifications par SMS",
+        "de": "Benachrichtigungen per SMS",
+        "es": "Notificaciones por SMS"
+      },
+      "description": {
+        "en": "Enter the mobile number your Gladys notifications go to. Each SMS uses credits of the OVHcloud SMS account of the house.",
+        "fr": "Saisissez le numéro de mobile qui recevra vos notifications Gladys. Chaque SMS consomme des crédits du compte SMS OVHcloud de la maison.",
+        "de": "Geben Sie die Mobilnummer ein, an die Ihre Gladys-Benachrichtigungen gehen. Jede SMS verbraucht Guthaben des OVHcloud-SMS-Kontos des Hauses.",
+        "es": "Introduzca el número de móvil al que llegarán sus notificaciones de Gladys. Cada SMS consume créditos de la cuenta SMS de OVHcloud de la casa."
+      }
+    },
+    {
+      "key": "phone_number",
+      "type": "string",
+      "label": {
+        "en": "Mobile number",
+        "fr": "Numéro de mobile",
+        "de": "Mobilnummer",
+        "es": "Número de móvil"
+      },
+      "description": {
+        "en": "Preferably with the country code, for example +33612345678.",
+        "fr": "De préférence avec l'indicatif du pays, par exemple +33612345678.",
+        "de": "Am besten mit Ländervorwahl, zum Beispiel +4915112345678.",
+        "es": "Preferiblemente con el prefijo del país, por ejemplo +34612345678."
+      },
+      "placeholder": {
+        "en": "+33612345678",
+        "fr": "+33612345678",
+        "de": "+4915112345678",
+        "es": "+34612345678"
+      },
+      "required": true
+    }
+  ],
+  "actions": [
+    {
+      "key": "test_connection",
+      "label": {
+        "en": "Test the connection",
+        "fr": "Tester la connexion",
+        "de": "Verbindung testen",
+        "es": "Probar la conexión"
+      },
+      "description": {
+        "en": "Reads the SMS account: credits left, senders and the one used.",
+        "fr": "Lit le compte SMS : crédits restants, expéditeurs et celui utilisé.",
+        "de": "Liest das SMS-Konto: Guthaben, Absender und den verwendeten.",
+        "es": "Lee la cuenta SMS: créditos restantes, remitentes y el que se usa."
+      },
+      "timeout_seconds": 30
+    },
+    {
+      "key": "send_test_sms",
+      "label": {
+        "en": "Send a test SMS",
+        "fr": "Envoyer un SMS de test",
+        "de": "Test-SMS senden",
+        "es": "Enviar un SMS de prueba"
+      },
+      "description": {
+        "en": "Sends a short SMS to the number below. It uses credits.",
+        "fr": "Envoie un court SMS au numéro ci-dessous. Il consomme des crédits.",
+        "de": "Sendet eine kurze SMS an die Nummer unten. Sie verbraucht Guthaben.",
+        "es": "Envía un SMS corto al número de abajo. Consume créditos."
+      },
+      "timeout_seconds": 30,
+      "fields": [
+        {
+          "key": "phone_number",
+          "type": "string",
+          "label": {
+            "en": "Mobile number",
+            "fr": "Numéro de mobile",
+            "de": "Mobilnummer",
+            "es": "Número de móvil"
+          },
+          "placeholder": {
+            "en": "+33612345678",
+            "fr": "+33612345678",
+            "de": "+4915112345678",
+            "es": "+34612345678"
+          },
+          "required": true
+        }
+      ]
+    }
+  ],
+  "widgets": [
+    {
+      "key": "account",
+      "label": {
+        "en": "OVHcloud SMS",
+        "fr": "SMS OVHcloud",
+        "de": "OVHcloud-SMS",
+        "es": "SMS de OVHcloud"
+      },
+      "description": {
+        "en": "Credits left, SMS sent and received this month, sender, last failure.",
+        "fr": "Crédits restants, SMS envoyés et reçus ce mois-ci, expéditeur, dernier échec.",
+        "de": "Restguthaben, in diesem Monat gesendete und empfangene SMS, Absender, letzter Fehler.",
+        "es": "Créditos restantes, SMS enviados y recibidos este mes, remitente, último fallo."
+      },
+      "icon": "message-square"
+    },
+    {
+      "key": "inbox",
+      "label": {
+        "en": "SMS received",
+        "fr": "SMS reçus",
+        "de": "Empfangene SMS",
+        "es": "SMS recibidos"
+      },
+      "description": {
+        "en": "The last SMS received on the OVHcloud account; tap one to read it whole.",
+        "fr": "Les derniers SMS reçus sur le compte OVHcloud ; touchez-en un pour le lire en entier.",
+        "de": "Die letzten auf dem OVHcloud-Konto empfangenen SMS; tippen Sie auf eine, um sie ganz zu lesen.",
+        "es": "Los últimos SMS recibidos en la cuenta de OVHcloud; toque uno para leerlo entero."
+      },
+      "icon": "inbox"
+    }
+  ],
+  "scene_triggers": [
+    {
+      "key": "sms_not_sent",
+      "label": {
+        "en": "SMS not sent",
+        "fr": "SMS non envoyé",
+        "de": "SMS nicht gesendet",
+        "es": "SMS no enviado"
+      },
+      "description": {
+        "en": "A Gladys notification could not leave by SMS. Fires on the first failure, then again only after an SMS went through: a scene that warns you through this same channel cannot loop.",
+        "fr": "Une notification Gladys n'a pas pu partir par SMS. Se déclenche au premier échec, puis seulement après qu'un SMS est de nouveau passé : une scène qui vous prévient par ce même canal ne peut pas boucler.",
+        "de": "Eine Gladys-Benachrichtigung konnte nicht per SMS gesendet werden. Löst beim ersten Fehler aus, danach erst wieder, nachdem eine SMS durchgegangen ist: Eine Szene, die Sie über denselben Kanal warnt, kann keine Schleife bilden.",
+        "es": "Una notificación de Gladys no pudo salir por SMS. Se activa con el primer fallo y solo de nuevo después de que un SMS haya pasado: una escena que le avisa por este mismo canal no puede entrar en bucle."
+      },
+      "fields": [
+        {
+          "key": "reason",
+          "type": "multi_select",
+          "label": {
+            "en": "Reasons",
+            "fr": "Causes",
+            "de": "Ursachen",
+            "es": "Causas"
+          },
+          "description": {
+            "en": "Leave empty to react to every reason.",
+            "fr": "Laissez vide pour réagir à toutes les causes.",
+            "de": "Leer lassen, um auf alle Ursachen zu reagieren.",
+            "es": "Déjelo vacío para reaccionar a todas las causas."
+          },
+          "options": [
+            {
+              "value": "not_enough_credits",
+              "label": {
+                "en": "Not enough credits",
+                "fr": "Crédits insuffisants",
+                "de": "Zu wenig Guthaben",
+                "es": "Créditos insuficientes"
+              }
+            },
+            {
+              "value": "access_denied",
+              "label": {
+                "en": "Keys refused (invalid, expired or revoked)",
+                "fr": "Clés refusées (invalides, expirées ou révoquées)",
+                "de": "Schlüssel abgelehnt (ungültig, abgelaufen oder widerrufen)",
+                "es": "Claves rechazadas (no válidas, caducadas o revocadas)"
+              }
+            },
+            {
+              "value": "not_granted",
+              "label": {
+                "en": "Rights missing on the consumer key",
+                "fr": "Droits manquants sur la clé consommateur",
+                "de": "Rechte fehlen am Consumer Key",
+                "es": "Faltan permisos en la clave de consumidor"
+              }
+            },
+            {
+              "value": "not_configured",
+              "label": {
+                "en": "Keys missing in the configuration",
+                "fr": "Clés manquantes dans la configuration",
+                "de": "Schlüssel fehlen in der Konfiguration",
+                "es": "Faltan claves en la configuración"
+              }
+            },
+            {
+              "value": "no_sms_account",
+              "label": {
+                "en": "No usable SMS account",
+                "fr": "Aucun compte SMS utilisable",
+                "de": "Kein nutzbares SMS-Konto",
+                "es": "Ninguna cuenta SMS utilizable"
+              }
+            },
+            {
+              "value": "invalid_number",
+              "label": {
+                "en": "Phone number refused",
+                "fr": "Numéro de téléphone refusé",
+                "de": "Rufnummer abgelehnt",
+                "es": "Número de teléfono rechazado"
+              }
+            },
+            {
+              "value": "invalid_sender",
+              "label": {
+                "en": "Sender refused",
+                "fr": "Expéditeur refusé",
+                "de": "Absender abgelehnt",
+                "es": "Remitente rechazado"
+              }
+            },
+            {
+              "value": "rejected",
+              "label": {
+                "en": "SMS refused by OVHcloud",
+                "fr": "SMS refusé par OVHcloud",
+                "de": "SMS von OVHcloud abgelehnt",
+                "es": "SMS rechazado por OVHcloud"
+              }
+            },
+            {
+              "value": "rate_limited",
+              "label": {
+                "en": "Too many calls in a short time",
+                "fr": "Trop d'appels en peu de temps",
+                "de": "Zu viele Aufrufe in kurzer Zeit",
+                "es": "Demasiadas llamadas en poco tiempo"
+              }
+            },
+            {
+              "value": "server_error",
+              "label": {
+                "en": "OVHcloud server error",
+                "fr": "Erreur du serveur OVHcloud",
+                "de": "Serverfehler bei OVHcloud",
+                "es": "Error del servidor de OVHcloud"
+              }
+            },
+            {
+              "value": "timeout",
+              "label": {
+                "en": "No answer in time (the SMS may still arrive)",
+                "fr": "Pas de réponse à temps (le SMS peut tout de même arriver)",
+                "de": "Keine Antwort rechtzeitig (die SMS kann trotzdem ankommen)",
+                "es": "Sin respuesta a tiempo (el SMS aún puede llegar)"
+              }
+            },
+            {
+              "value": "unreachable",
+              "label": {
+                "en": "OVHcloud unreachable (network)",
+                "fr": "OVHcloud injoignable (réseau)",
+                "de": "OVHcloud nicht erreichbar (Netzwerk)",
+                "es": "OVHcloud inaccesible (red)"
+              }
+            },
+            {
+              "value": "unexpected",
+              "label": {
+                "en": "Unexpected answer",
+                "fr": "Réponse inattendue",
+                "de": "Unerwartete Antwort",
+                "es": "Respuesta inesperada"
+              }
+            }
+          ]
+        }
+      ],
+      "variables": [
+        {
+          "key": "reason",
+          "type": "string",
+          "label": {
+            "en": "Reason (code)",
+            "fr": "Cause (code)",
+            "de": "Ursache (Code)",
+            "es": "Causa (código)"
+          },
+          "description": {
+            "en": "not_enough_credits, access_denied, not_granted, not_configured, no_sms_account, invalid_number, invalid_sender, rejected, rate_limited, server_error, timeout, unreachable or unexpected.",
+            "fr": "not_enough_credits, access_denied, not_granted, not_configured, no_sms_account, invalid_number, invalid_sender, rejected, rate_limited, server_error, timeout, unreachable ou unexpected.",
+            "de": "not_enough_credits, access_denied, not_granted, not_configured, no_sms_account, invalid_number, invalid_sender, rejected, rate_limited, server_error, timeout, unreachable oder unexpected.",
+            "es": "not_enough_credits, access_denied, not_granted, not_configured, no_sms_account, invalid_number, invalid_sender, rejected, rate_limited, server_error, timeout, unreachable o unexpected."
+          }
+        },
+        {
+          "key": "status",
+          "type": "number",
+          "label": {
+            "en": "HTTP status",
+            "fr": "Code HTTP",
+            "de": "HTTP-Status",
+            "es": "Código HTTP"
+          },
+          "description": {
+            "en": "The answer of OVHcloud (403, 429…), empty without an answer.",
+            "fr": "La réponse d'OVHcloud (403, 429…), vide sans réponse.",
+            "de": "Die Antwort von OVHcloud (403, 429…), leer ohne Antwort.",
+            "es": "La respuesta de OVHcloud (403, 429…), vacía sin respuesta."
+          }
+        },
+        {
+          "key": "error",
+          "type": "string",
+          "label": {
+            "en": "Error message",
+            "fr": "Message d'erreur",
+            "de": "Fehlermeldung",
+            "es": "Mensaje de error"
+          },
+          "description": {
+            "en": "The error in English, as in the logs.",
+            "fr": "L'erreur en anglais, comme dans les journaux.",
+            "de": "Der Fehler auf Englisch, wie in den Protokollen.",
+            "es": "El error en inglés, como en los registros."
+          }
+        },
+        {
+          "key": "phone_number",
+          "type": "string",
+          "label": {
+            "en": "Phone number",
+            "fr": "Numéro de téléphone",
+            "de": "Rufnummer",
+            "es": "Número de teléfono"
+          },
+          "description": {
+            "en": "The masked number of the recipient, e.g. +336******78.",
+            "fr": "Le numéro masqué du destinataire, par exemple +336******78.",
+            "de": "Die maskierte Nummer des Empfängers, z. B. +336******78.",
+            "es": "El número enmascarado del destinatario, por ejemplo +336******78."
+          }
+        }
+      ]
+    },
+    {
+      "key": "sms_received",
+      "label": {
+        "en": "SMS received",
+        "fr": "SMS reçu",
+        "de": "SMS empfangen",
+        "es": "SMS recibido"
+      },
+      "description": {
+        "en": "An SMS arrived on the OVHcloud account (\"Read the SMS received\" must be on). The sender can be forged: never use it to open a door or disarm an alarm.",
+        "fr": "Un SMS est arrivé sur le compte OVHcloud (« Lire les SMS reçus » doit être activé). L'expéditeur peut être falsifié : ne vous en servez jamais pour ouvrir une porte ou désarmer une alarme.",
+        "de": "Eine SMS ist auf dem OVHcloud-Konto eingegangen („Empfangene SMS lesen“ muss aktiv sein). Der Absender kann gefälscht sein: Nutzen Sie es nie, um eine Tür zu öffnen oder eine Alarmanlage zu entschärfen.",
+        "es": "Ha llegado un SMS a la cuenta de OVHcloud («Leer los SMS recibidos» debe estar activado). El remitente puede falsificarse: no lo use nunca para abrir una puerta o desactivar una alarma."
+      },
+      "fields": [
+        {
+          "key": "sender",
+          "type": "string",
+          "label": {
+            "en": "From",
+            "fr": "De",
+            "de": "Von",
+            "es": "De"
+          },
+          "description": {
+            "en": "Only SMS from this number, as OVHcloud writes it (+33612345678). Empty: every sender.",
+            "fr": "Seulement les SMS de ce numéro, écrit comme OVHcloud l'écrit (+33612345678). Vide : tous les expéditeurs.",
+            "de": "Nur SMS von dieser Nummer, so geschrieben wie bei OVHcloud (+4915112345678). Leer: alle Absender.",
+            "es": "Solo los SMS de este número, escrito como lo escribe OVHcloud (+34612345678). Vacío: todos los remitentes."
+          },
+          "placeholder": {
+            "en": "+33612345678",
+            "fr": "+33612345678",
+            "de": "+4915112345678",
+            "es": "+34612345678"
+          }
+        },
+        {
+          "key": "keyword",
+          "type": "string",
+          "label": {
+            "en": "First word",
+            "fr": "Premier mot",
+            "de": "Erstes Wort",
+            "es": "Primera palabra"
+          },
+          "description": {
+            "en": "Only SMS starting with this word, in capitals without accents (\"Status?\" gives STATUS). Empty: every SMS.",
+            "fr": "Seulement les SMS qui commencent par ce mot, en majuscules sans accents (« Météo ? » donne METEO). Vide : tous les SMS.",
+            "de": "Nur SMS, die mit diesem Wort beginnen, in Großbuchstaben ohne Akzente („Status?“ ergibt STATUS). Leer: alle SMS.",
+            "es": "Solo los SMS que empiezan por esta palabra, en mayúsculas sin acentos («¿Estado?» da ESTADO). Vacío: todos los SMS."
+          },
+          "placeholder": {
+            "en": "STATUS",
+            "fr": "METEO",
+            "de": "STATUS",
+            "es": "ESTADO"
+          }
+        }
+      ],
+      "variables": [
+        {
+          "key": "sender",
+          "type": "string",
+          "label": {
+            "en": "Sender",
+            "fr": "Expéditeur",
+            "de": "Absender",
+            "es": "Remitente"
+          },
+          "description": {
+            "en": "The number that sent the SMS, e.g. +33612345678.",
+            "fr": "Le numéro qui a envoyé le SMS, par exemple +33612345678.",
+            "de": "Die Nummer, die die SMS gesendet hat, z. B. +4915112345678.",
+            "es": "El número que envió el SMS, por ejemplo +34612345678."
+          }
+        },
+        {
+          "key": "message",
+          "type": "string",
+          "label": {
+            "en": "Text",
+            "fr": "Texte",
+            "de": "Text",
+            "es": "Texto"
+          },
+          "description": {
+            "en": "The text of the SMS (1,000 characters at most).",
+            "fr": "Le texte du SMS (1 000 caractères au plus).",
+            "de": "Der Text der SMS (höchstens 1.000 Zeichen).",
+            "es": "El texto del SMS (1000 caracteres como máximo)."
+          }
+        },
+        {
+          "key": "keyword",
+          "type": "string",
+          "label": {
+            "en": "First word",
+            "fr": "Premier mot",
+            "de": "Erstes Wort",
+            "es": "Primera palabra"
+          },
+          "description": {
+            "en": "The first word of the text, in capitals without accents.",
+            "fr": "Le premier mot du texte, en majuscules sans accents.",
+            "de": "Das erste Wort des Textes, in Großbuchstaben ohne Akzente.",
+            "es": "La primera palabra del texto, en mayúsculas sin acentos."
+          }
+        },
+        {
+          "key": "received_at",
+          "type": "string",
+          "label": {
+            "en": "Received at",
+            "fr": "Reçu le",
+            "de": "Empfangen am",
+            "es": "Recibido el"
+          },
+          "description": {
+            "en": "Date and time of reception, ISO 8601 in UTC.",
+            "fr": "Date et heure de réception, au format ISO 8601 en UTC.",
+            "de": "Datum und Uhrzeit des Empfangs, ISO 8601 in UTC.",
+            "es": "Fecha y hora de recepción, ISO 8601 en UTC."
+          }
+        }
+      ]
+    },
+    {
+      "key": "credits_low",
+      "label": {
+        "en": "Credits low",
+        "fr": "Crédits bas",
+        "de": "Wenig Guthaben",
+        "es": "Pocos créditos"
+      },
+      "description": {
+        "en": "The SMS credits went below the threshold of the configuration. Fires once, then again only after the account was topped up above it.",
+        "fr": "Les crédits SMS sont passés sous le seuil de la configuration. Se déclenche une fois, puis de nouveau seulement après une recharge au-dessus du seuil.",
+        "de": "Das SMS-Guthaben ist unter die Schwelle der Konfiguration gefallen. Löst einmal aus, danach erst wieder nach einer Aufladung über die Schwelle.",
+        "es": "Los créditos SMS han bajado del umbral de la configuración. Se activa una vez y de nuevo solo después de una recarga por encima del umbral."
+      },
+      "variables": [
+        {
+          "key": "credits_left",
+          "type": "number",
+          "label": {
+            "en": "Credits left",
+            "fr": "Crédits restants",
+            "de": "Restguthaben",
+            "es": "Créditos restantes"
+          }
+        },
+        {
+          "key": "threshold",
+          "type": "number",
+          "label": {
+            "en": "Threshold",
+            "fr": "Seuil",
+            "de": "Schwelle",
+            "es": "Umbral"
+          }
+        },
+        {
+          "key": "service_name",
+          "type": "string",
+          "label": {
+            "en": "SMS account",
+            "fr": "Compte SMS",
+            "de": "SMS-Konto",
+            "es": "Cuenta SMS"
+          }
+        }
+      ]
+    }
+  ],
+  "scene_actions": [
+    {
+      "key": "send_sms",
+      "label": {
+        "en": "Send an SMS to a number",
+        "fr": "Envoyer un SMS à un numéro",
+        "de": "SMS an eine Nummer senden",
+        "es": "Enviar un SMS a un número"
+      },
+      "description": {
+        "en": "Sends an SMS to any number, even someone who is not a Gladys user (a neighbor, a babysitter).",
+        "fr": "Envoie un SMS à n'importe quel numéro, même à quelqu'un qui n'est pas utilisateur de Gladys (un voisin, une nounou).",
+        "de": "Sendet eine SMS an eine beliebige Nummer, auch an jemanden ohne Gladys-Konto (Nachbar, Babysitter).",
+        "es": "Envía un SMS a cualquier número, incluso a alguien que no es usuario de Gladys (un vecino, una niñera)."
+      },
+      "timeout_seconds": 30,
+      "fields": [
+        {
+          "key": "phone_numbers",
+          "type": "string",
+          "label": {
+            "en": "Phone numbers",
+            "fr": "Numéros de téléphone",
+            "de": "Rufnummern",
+            "es": "Números de teléfono"
+          },
+          "description": {
+            "en": "One or several numbers, separated by commas.",
+            "fr": "Un ou plusieurs numéros, séparés par des virgules.",
+            "de": "Eine oder mehrere Nummern, durch Kommas getrennt.",
+            "es": "Uno o varios números, separados por comas."
+          },
+          "placeholder": {
+            "en": "+33612345678, +33698765432",
+            "fr": "+33612345678, +33698765432",
+            "de": "+4915112345678, +4917612345678",
+            "es": "+34612345678, +34698765432"
+          },
+          "required": true
+        },
+        {
+          "key": "message",
+          "type": "string",
+          "label": {
+            "en": "Text",
+            "fr": "Texte",
+            "de": "Text",
+            "es": "Texto"
+          },
+          "description": {
+            "en": "Scene variables are allowed. A long text is sent in several parts, each one using credits.",
+            "fr": "Les variables de scène sont acceptées. Un long texte part en plusieurs parties, chacune consommant des crédits.",
+            "de": "Szenenvariablen sind erlaubt. Ein langer Text wird in mehreren Teilen gesendet, jeder verbraucht Guthaben.",
+            "es": "Se admiten variables de escena. Un texto largo se envía en varias partes, y cada una consume créditos."
+          },
+          "required": true
+        }
+      ],
+      "outputs": [
+        {
+          "key": "sent_count",
+          "type": "number",
+          "label": {
+            "en": "SMS sent",
+            "fr": "SMS envoyés",
+            "de": "Gesendete SMS",
+            "es": "SMS enviados"
+          }
+        },
+        {
+          "key": "invalid_numbers",
+          "type": "string",
+          "label": {
+            "en": "Numbers refused",
+            "fr": "Numéros refusés",
+            "de": "Abgelehnte Nummern",
+            "es": "Números rechazados"
+          }
+        },
+        {
+          "key": "credits_used",
+          "type": "number",
+          "label": {
+            "en": "Credits used",
+            "fr": "Crédits utilisés",
+            "de": "Verbrauchtes Guthaben",
+            "es": "Créditos usados"
+          }
+        },
+        {
+          "key": "credits_left",
+          "type": "number",
+          "label": {
+            "en": "Credits left",
+            "fr": "Crédits restants",
+            "de": "Restguthaben",
+            "es": "Créditos restantes"
+          }
+        }
+      ]
+    },
+    {
+      "key": "get_account",
+      "label": {
+        "en": "Read the SMS account",
+        "fr": "Lire le compte SMS",
+        "de": "SMS-Konto lesen",
+        "es": "Leer la cuenta SMS"
+      },
+      "description": {
+        "en": "Credits left and SMS of the month, for a report or a condition.",
+        "fr": "Crédits restants et SMS du mois, pour un compte rendu ou une condition.",
+        "de": "Restguthaben und SMS des Monats, für einen Bericht oder eine Bedingung.",
+        "es": "Créditos restantes y SMS del mes, para un informe o una condición."
+      },
+      "timeout_seconds": 30,
+      "outputs": [
+        {
+          "key": "credits_left",
+          "type": "number",
+          "label": {
+            "en": "Credits left",
+            "fr": "Crédits restants",
+            "de": "Restguthaben",
+            "es": "Créditos restantes"
+          }
+        },
+        {
+          "key": "sent_this_month",
+          "type": "number",
+          "label": {
+            "en": "SMS sent this month",
+            "fr": "SMS envoyés ce mois-ci",
+            "de": "SMS gesendet (Monat)",
+            "es": "SMS enviados este mes"
+          }
+        },
+        {
+          "key": "received_this_month",
+          "type": "number",
+          "label": {
+            "en": "SMS received this month",
+            "fr": "SMS reçus ce mois-ci",
+            "de": "SMS empfangen (Monat)",
+            "es": "SMS recibidos este mes"
+          }
+        },
+        {
+          "key": "service_name",
+          "type": "string",
+          "label": {
+            "en": "SMS account",
+            "fr": "Compte SMS",
+            "de": "SMS-Konto",
+            "es": "Cuenta SMS"
+          }
+        }
+      ]
+    }
+  ]
+}
