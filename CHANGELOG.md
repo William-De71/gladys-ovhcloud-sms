@@ -5,6 +5,12 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions
 follow [Semantic Versioning](https://semver.org/). This file is generated at
 each release from the Conventional Commits: do not edit it by hand.
 
+## [0.1.1] - 2026-10-24
+
+### Security
+
+- **security:** build the image on Node.js 24.22.1 or later ([81d7ab6](https://github.com/William-De71/gladys-ovhcloud-sms/commit/81d7ab69b140a84425698d9573155016ea9c0415))
+
 ## [0.1.0] - 2026-10-16
 
 ### Added
@@ -17,4 +23,5 @@ each release from the Conventional Commits: do not edit it by hand.
 - Configuration screen buttons: test the connection, send a test SMS.
 - Cloud transport only, signed OVHcloud API calls; English, French, German and Spanish everywhere.
 
+[0.1.1]: https://github.com/William-De71/gladys-ovhcloud-sms/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/William-De71/gladys-ovhcloud-sms/releases/tag/v0.1.0

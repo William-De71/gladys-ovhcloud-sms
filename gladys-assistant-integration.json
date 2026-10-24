@@ -8,8 +8,8 @@
     "de": "Gladys-Benachrichtigungen per SMS über OVHcloud, an jeden Anbieter, mit Szenen und Widgets.",
     "es": "Notificaciones de Gladys por SMS con OVHcloud, a cualquier operador, con escenas y widgets."
   },
-  "version": "0.1.0",
-  "docker_image": "ghcr.io/william-de71/gladys-ovhcloud-sms:0.1.0",
+  "version": "0.1.1",
+  "docker_image": "ghcr.io/william-de71/gladys-ovhcloud-sms:0.1.1",
   "gladys_version": ">=5.1.0",
   "categories": ["notifications"],
   "transports": ["cloud"],
