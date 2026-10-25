@@ -23,7 +23,7 @@ opérateurs mobiles.
 
 ## Prérequis
 
-- Gladys Assistant **5.1.0** ou plus récent.
+- Gladys Assistant **5.3.0** ou plus récent.
 - Un compte OVHcloud avec un **compte SMS** (un pack SMS, commandé dans
   l'espace client, rubrique Télécom → SMS) et des crédits. Chaque SMS consomme
   des crédits, davantage pour un long texte ou un numéro étranger.

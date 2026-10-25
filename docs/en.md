@@ -22,7 +22,7 @@ operators.
 
 ## Prerequisites
 
-- Gladys Assistant **5.1.0** or later.
+- Gladys Assistant **5.3.0** or later.
 - An OVHcloud account with an **SMS account** (an SMS pack, ordered in the
   Control Panel under Telecom → SMS) and some credits. Each SMS uses credits,
   more for a long text or a foreign number.

@@ -23,7 +23,7 @@ Mobilfunkanbieter.
 
 ## Voraussetzungen
 
-- Gladys Assistant **5.1.0** oder neuer.
+- Gladys Assistant **5.3.0** oder neuer.
 - Ein OVHcloud-Konto mit einem **SMS-Konto** (ein SMS-Paket, bestellt im
   Control Panel unter Telecom → SMS) und etwas Guthaben. Jede SMS verbraucht
   Guthaben, mehr bei einem langen Text oder einer ausländischen Nummer.

@@ -24,7 +24,7 @@ operadores móviles.
 
 ## Requisitos previos
 
-- Gladys Assistant **5.1.0** o posterior.
+- Gladys Assistant **5.3.0** o posterior.
 - Una cuenta de OVHcloud con una **cuenta SMS** (un pack de SMS, contratado
   en el área de cliente, apartado Telecom → SMS) y créditos. Cada SMS consume
   créditos, más para un texto largo o un número extranjero.
